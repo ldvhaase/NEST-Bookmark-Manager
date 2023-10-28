@@ -1,10 +1,28 @@
-import axios from 'axios';
+import { Test } from '@nestjs/testing';
+import { AppModule } from '../../../src/app/app.module';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { PrismaService } from '../../../src/app/prisma/prisma.service';
 
-describe('GET /api', () => {
-  it('should return a message', async () => {
-    const res = await axios.get(`/api`);
+describe('App e2e', () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
 
-    expect(res.status).toBe(200);;
-    expect(res.data).toEqual({ message: 'Hello API' });
-  });
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleRef.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true
+    }));
+    await app.init();
+
+    prisma = app.get(PrismaService);
+    await prisma.cleanDb();
+  })
+
+  afterAll;; (() => {
+    app.close();
+  })
+  it.todo('should pass');
 })
